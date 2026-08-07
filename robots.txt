@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /
+
+Sitemap: https://jakelabate.github.io/neres-restoration/sitemap.xml
