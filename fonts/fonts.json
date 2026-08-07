@@ -1,0 +1,38 @@
+{
+  "entries": [
+    {
+      "family": "Public Sans",
+      "package": "public-sans",
+      "variable": false,
+      "faces": [
+        {
+          "file": "public-sans-latin-400-normal.woff2",
+          "weight": "400"
+        },
+        {
+          "file": "public-sans-latin-600-normal.woff2",
+          "weight": "600"
+        },
+        {
+          "file": "public-sans-latin-700-normal.woff2",
+          "weight": "700"
+        }
+      ],
+      "fallback": "arial",
+      "metrics": {
+        "upem": 2000,
+        "ascent": 1900,
+        "descent": -450,
+        "gap": 0,
+        "avg": 921.9
+      },
+      "overrides": {
+        "size-adjust": "105.13%",
+        "ascent-override": "90.37%",
+        "descent-override": "21.40%",
+        "line-gap-override": "0.00%"
+      },
+      "stack": "'Public Sans', 'Public Sans Fallback', Arial, sans-serif"
+    }
+  ]
+}
