@@ -281,3 +281,23 @@
     x0 = null;
   }, {passive: true});
 })();
+
+/* ------------------------------------------------------------- scroll reveals
+ * Progressive: without JS the .js-anim class never lands and everything is
+ * simply visible. With reduced motion preferred, the class is never added. */
+(function () {
+  'use strict';
+  if (!document.documentElement.classList.contains('js-anim')) return;
+  if (!('IntersectionObserver' in window)) {
+    document.documentElement.classList.remove('js-anim');
+    return;
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  Array.prototype.forEach.call(document.querySelectorAll('.rv'), function (el) {
+    io.observe(el);
+  });
+})();
