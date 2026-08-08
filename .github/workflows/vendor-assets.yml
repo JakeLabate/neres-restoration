@@ -1,0 +1,63 @@
+name: Vendor brand assets
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download assets
+        run: |
+          set +e
+          mkdir -p "$(dirname 'img/probe/fav-www.ico')"
+          echo 'Fetching img/probe/fav-www.ico'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/fav-www.ico' 'https://www.neresrestoration.com/favicon.ico' || echo '  MISS img/probe/fav-www.ico'
+          mkdir -p "$(dirname 'img/probe/fav-root.ico')"
+          echo 'Fetching img/probe/fav-root.ico'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/fav-root.ico' 'https://neresrestoration.com/favicon.ico' || echo '  MISS img/probe/fav-root.ico'
+          mkdir -p "$(dirname 'img/probe/touch.png')"
+          echo 'Fetching img/probe/touch.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/touch.png' 'https://www.neresrestoration.com/apple-touch-icon.png' || echo '  MISS img/probe/touch.png'
+          mkdir -p "$(dirname 'img/probe/logo1.png')"
+          echo 'Fetching img/probe/logo1.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/logo1.png' 'https://www.neresrestoration.com/logo.png' || echo '  MISS img/probe/logo1.png'
+          mkdir -p "$(dirname 'img/probe/logo2.png')"
+          echo 'Fetching img/probe/logo2.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/logo2.png' 'https://www.neresrestoration.com/images/logo.png' || echo '  MISS img/probe/logo2.png'
+          mkdir -p "$(dirname 'img/probe/logo3.png')"
+          echo 'Fetching img/probe/logo3.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/logo3.png' 'https://www.neresrestoration.com/img/logo.png' || echo '  MISS img/probe/logo3.png'
+          mkdir -p "$(dirname 'img/probe/logo4.png')"
+          echo 'Fetching img/probe/logo4.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/logo4.png' 'https://www.neresrestoration.com/assets/logo.png' || echo '  MISS img/probe/logo4.png'
+          mkdir -p "$(dirname 'img/probe/logo5.png')"
+          echo 'Fetching img/probe/logo5.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/logo5.png' 'https://www.neresrestoration.com/wp-content/uploads/logo.png' || echo '  MISS img/probe/logo5.png'
+          mkdir -p "$(dirname 'img/probe/touch2.png')"
+          echo 'Fetching img/probe/touch2.png'
+          curl -fsSL --max-time 30 --max-filesize 10485760 -A 'Mozilla/5.0 (compatible; site-builder)' -o 'img/probe/touch2.png' 'https://www.neresrestoration.com/apple-touch-icon-precomposed.png' || echo '  MISS img/probe/touch2.png'
+      - name: Drop anything that is not a real image
+        run: |
+          for f in $(git status --porcelain --untracked-files=all | awk '{print $2}'); do
+            case "$f" in .github/*) continue;; esac
+            if [ -f "$f" ]; then
+              t=$(file -b --mime-type "$f")
+              case "$t" in
+                image/*|font/*|application/font*) : ;;
+                text/xml|application/xml|text/plain)
+                  # SVG is reported inconsistently across `file` versions.
+                  if head -c 1024 "$f" | grep -qi '<svg'; then :; else
+                    echo "  DROP $f ($t, not an svg)"; rm -f "$f"; fi ;;
+                *) echo "  DROP $f ($t)"; rm -f "$f" ;;
+              esac
+            fi
+          done
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --staged --quiet && echo 'nothing vendored' && exit 0
+          git commit -m 'Vendor brand assets'
+          git push
